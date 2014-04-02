@@ -51,7 +51,7 @@ containsZero = function(x) ifelse(0 > x[1] & 0 < x[2], TRUE, FALSE)
 significant = !aaply(G_mcmc_conf, 1:2, containsZero)
 dimnames(significant) = dimnames(G_mcmc) = dimnames(G_mcmc_conf)[1:2] = dimnames(G_lme4)
 
-#rmat = as.matrix(nearPD(relat_matrix)[[1]])
+#rmat = relat_matrix
 #dimnames(rmat) = dimnames(relat_matrix)
 #rmat = Matrix(rmat, sparse = T)
 #mcmc_model = MCMCglmm(value ~ variable,
