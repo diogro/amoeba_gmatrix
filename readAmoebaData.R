@@ -17,8 +17,7 @@ dicty_Phen$Strain = paste("X", dicty_Phen$Strain, sep = '')
 names(dicty_Phen_std)[[4]] = 'variable'
 names(dicty_Phen)[[4]] = 'variable'
 
-ggplot(dicty_Phen_std, aes(variable, value, group = interaction(Strain, variable), color=Strain)) +
-geom_boxplot() + theme_classic()
+ggplot(dicty_Phen_std, aes(variable, value, group = interaction(Strain, variable), color=Strain)) + geom_boxplot() + theme_classic()
 
 cast.phen = dcast(dicty_Phen_std, Strain~variable, function(x) mean(x, na.rm = T))
 plot11 = ggplot(cast.phen, aes(length , succes , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
@@ -35,7 +34,6 @@ rownames(G_lme4) = colnames(G_lme4) = gsub('variable', '', rownames(G_lme4))
 dimnames(attr(G_lme4, 'correlation')) = dimnames(G_lme4)
 names(attr(G_lme4, 'stddev')) = rownames(G_lme4)
 
-length(unique(dicty_Phen_std$Strain))
 num_traits = length(unique(dicty_Phen_std$variable))
 prior = list(R = list(V = 1, n = 0.002),
              G = list(G1 = list(V = diag(num_traits) * 0.02, n = num_traits+1)))
