@@ -36,7 +36,7 @@ mcmc_model = MCMCglmm(value ~ variable - 1,
                       random = ~us(variable):Strain,
                       data = dicty_Phen_std,
                       prior = prior,
-                      pl = TRUE,
+                      verbose = FALSE,
                       family = "gaussian")
 summary(mcmc_model)
 Gs = array(mcmc_model$VCV[,1:(num_traits*num_traits)], dim = c(1000, num_traits, num_traits))
