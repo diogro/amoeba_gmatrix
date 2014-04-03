@@ -22,7 +22,7 @@ dicty_Phen_std = dicty_Phen_std[complete.cases(dicty_Phen_std),]
 
 ggplot(dicty_Phen_std, aes(variable, value, group = interaction(Strain, variable), color=Strain)) + geom_boxplot() + theme_classic()
 
-model = lmer(value ~ variable + (0 + variable|Strain), data = dicty_Phen_std_c)
+model = lmer(value ~ variable + (0 + variable|Strain), data = dicty_Phen_std)
 G_lme4 = VarCorr(model)[[1]]
 rownames(G_lme4) = colnames(G_lme4) = gsub('variable', '', rownames(G_lme4))
 dimnames(attr(G_lme4, 'correlation')) = dimnames(G_lme4)
