@@ -81,7 +81,7 @@ rownames(relat_matrix[['distances']]) = colnames(relat_matrix[['one_locus']])
 
 library(ape)
 tree = llply(relat_matrix, triangMtd)
-rooted = root(tree[[3]], "X34.1", resolve.root = TRUE)
+rooted = root(tree[['distances']], "X34.1", resolve.root = TRUE)
 rooted <- compute.brlen(rooted, 1)
 #plot(rooted)
 strain_relat = inverseA (rooted, scale = FALSE)
