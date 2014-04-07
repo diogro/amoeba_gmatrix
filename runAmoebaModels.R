@@ -3,12 +3,12 @@ source('./readAmoebaData.R')
 ggplot(dicty_Phen_std, aes(variable, value, group = interaction(Strain, variable), color=Strain)) + geom_boxplot() + theme_classic()
 
 cast_phen = dcast(dicty_Phen_std, Strain~variable, function(x) mean(x, na.rm = T))
-plot11 = ggplot(cast_phen, aes(length , succes , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
-plot12 = ggplot(cast_phen, aes(length , tsc    , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
-plot13 = ggplot(cast_phen, aes(length , viab   , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
-plot21 = ggplot(cast_phen, aes(tsc    , succes , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
-plot22 = ggplot(cast_phen, aes(tsc    , viab   , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
-plot23 = ggplot(cast_phen, aes(viab   , succes , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
+plot11 = ggplot(cast_phen, aes(length, succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
+plot12 = ggplot(cast_phen, aes(length, tsc   , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
+plot13 = ggplot(cast_phen, aes(length, viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
+plot21 = ggplot(cast_phen, aes(tsc   , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
+plot22 = ggplot(cast_phen, aes(tsc   , viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
+plot23 = ggplot(cast_phen, aes(viab  , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
 png("~/Desktop/real.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 dev.off()
@@ -69,19 +69,19 @@ dev.off()
 ##
 
 relat_matrix = list()
-relat_matrix[['one_locus']] = as.matrix(read.csv("./relatedness_matrices_one_locus.csv",  header = TRUE)[-1])
+relat_matrix[['one_locus']] = as.matrix(read.csv("./relatedness_matrices_one_locus.csv", header = TRUE)[-1])
 rownames(relat_matrix[['one_locus']]) = colnames(relat_matrix[['one_locus']])
-relat_matrix[['all_locus']] = as.matrix(read.csv("./relatedness_matrices_all_loci.csv",  header = TRUE)[-1])
+relat_matrix[['all_locus']] = as.matrix(read.csv("./relatedness_matrices_all_loci.csv", header = TRUE)[-1])
 rownames(relat_matrix[['all_locus']]) = colnames(relat_matrix[['one_locus']])
-relat_matrix[['distances']] = as.matrix(read.csv("./relatedness_matrices_distances.csv",  header = TRUE)[-1])
-diag(relat_matrix[['distances']]) = 1
+relat_matrix[['distances']] = as.matrix(read.csv("./relatedness_matrices_distances.csv", header = TRUE)[-1])
+diag(relat_matrix[['distances']]) = 0
 rownames(relat_matrix[['distances']]) = colnames(relat_matrix[['one_locus']])
 #relat_matrix[['allelecor']] = as.matrix(read.csv("./relatedness_matrices_allelic_correlation.csv",  header = TRUE)[-1])
 #rownames(relat_matrix[['allelecor']]) = colnames(relat_matrix[['one_locus']])
 
 library(ape)
 tree = llply(relat_matrix, triangMtd)
-rooted = root(tree[['distances']], "X34.1", resolve.root = TRUE)
+rooted = root(tree[['one_locus']], "X34.1", resolve.root = TRUE)
 rooted <- compute.brlen(rooted, 1)
 #plot(rooted)
 strain_relat = inverseA (rooted, scale = FALSE)
@@ -148,3 +148,12 @@ plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), c
 png("~/Desktop/sim_full.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 dev.off()
+
+##
+# Fitness model stuff
+##
+
+cast_phen_non_sd = dcast(dicty_Phen, Strain~variable, function(x) mean(x, na.rm = T))
+sim_phens = data.frame(scale(sim_strains[,-1], center = -(3+colMeans(cast_phen_non_sd[,-1])), scale = FALSE))
+colMeans(sim_phens)
+ggplot(sim_phens, aes(tsc*viab)) + geom_histogram() + theme_classic()
