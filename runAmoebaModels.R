@@ -1,3 +1,6 @@
+library(ape)
+library(cluster)
+
 source('./readAmoebaData.R')
 
 ggplot(dicty_Phen_std, aes(variable, value, group = interaction(Strain, variable), color=Strain)) + geom_boxplot() + theme_classic()
@@ -68,22 +71,12 @@ dev.off()
 # MCMC mixed model with gaussian priors and relatedness matrix
 ##
 
-relat_matrix = list()
-relat_matrix[['one_locus']] = as.matrix(read.csv("./relatedness_matrices_one_locus.csv", header = TRUE)[-1])
-rownames(relat_matrix[['one_locus']]) = colnames(relat_matrix[['one_locus']])
-relat_matrix[['all_locus']] = as.matrix(read.csv("./relatedness_matrices_all_loci.csv", header = TRUE)[-1])
-rownames(relat_matrix[['all_locus']]) = colnames(relat_matrix[['one_locus']])
-relat_matrix[['distances']] = as.matrix(read.csv("./relatedness_matrices_distances.csv", header = TRUE)[-1])
-diag(relat_matrix[['distances']]) = 0
-rownames(relat_matrix[['distances']]) = colnames(relat_matrix[['one_locus']])
-#relat_matrix[['allelecor']] = as.matrix(read.csv("./relatedness_matrices_allelic_correlation.csv",  header = TRUE)[-1])
-#rownames(relat_matrix[['allelecor']]) = colnames(relat_matrix[['one_locus']])
-
-library(ape)
-tree = llply(relat_matrix, triangMtd)
-rooted = root(tree[['one_locus']], "X34.1", resolve.root = TRUE)
-rooted <- compute.brlen(rooted, 1)
+relat_matrix = as.matrix(read.csv("./relatedness_matrices_distances.csv", header = TRUE)[-1])
+diag(relat_matrix) = 0
+rownames(relat_matrix) = colnames(relat_matrix)
+rooted = as.phylo(as.hclust(agnes(relat_matrix, method = 'average')))
 #plot(rooted)
+
 strain_relat = inverseA (rooted, scale = FALSE)
 rownames(strain_relat$Ainv) = strain_relat$node.names
 num_traits = length(unique(dicty_Phen_std$variable))
@@ -91,12 +84,12 @@ num_strains = length(unique(dicty_Phen_std$Strain))
 prior = list(R = list(V = 1, n = 0.002),
              G = list(G1 = list(V = diag(num_traits) * 0.02, n = num_traits+1)))
 mcmc_r_model = MCMCglmm(value ~ variable - 1,
-                      random = ~us(variable):Strain,
-                      data = dicty_Phen_std,
-                      prior = prior,
-                      ginverse = list(Strain = strain_relat$Ainv),
-                      verbose = FALSE,
-                      family = "gaussian")
+                        random = ~us(variable):Strain,
+                        data = dicty_Phen_std,
+                        prior = prior,
+                        ginverse = list(Strain = strain_relat$Ainv),
+                        verbose = FALSE,
+                        family = "gaussian")
 summary(mcmc_r_model)
 Gs_r = array(mcmc_r_model$VCV[,1:(num_traits*num_traits)], dim = c(1000, num_traits, num_traits))
 G_mcmc_r = apply(Gs_r, 2:3, mean)
