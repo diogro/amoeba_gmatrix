@@ -146,7 +146,21 @@ dev.off()
 # Fitness model stuff
 ##
 
-cast_phen_non_sd = dcast(dicty_Phen, Strain~variable, function(x) mean(x, na.rm = T))
-sim_phens = data.frame(scale(sim_strains[,-1], center = -(3+colMeans(cast_phen_non_sd[,-1])), scale = FALSE))
-colMeans(sim_phens)
+mcmcVar <- function(){
+    mcmc_model = MCMCglmm(value ~ variable - 1,
+                          random = ~idh(variable):Strain,
+                          data = dicty_Phen,
+                          prior = prior,
+                          ginverse = list(Strain = strain_relat$Ainv),
+                          verbose = FALSE,
+                          family = "gaussian")
+    vars = aaply(mcmc_model$VCV[,1:4], 1, function(x) outer(sqrt(x), sqrt(x)))
+    cors = aaply(Gs_r, 1, cov2cor)
+    covars = cors * vars
+    return(list(means = mcmc_model$Sol[,1:4], vars = covars))
+}
+mean_vars = mcmcVar()
+sim_phens = adply(1:1000, 1, function(index) mvtnorm::rmvnorm(1, mean_vars[[1]][index,], mean_vars[[2]][index,,]))
+names(sim_phens) = gsub('variable', '', names(sim_phens))
+
 ggplot(sim_phens, aes(tsc*viab)) + geom_histogram() + theme_classic()
