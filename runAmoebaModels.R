@@ -151,16 +151,23 @@ mcmcVar <- function(){
                           random = ~idh(variable):Strain,
                           data = dicty_Phen,
                           prior = prior,
-                          ginverse = list(Strain = strain_relat$Ainv),
+                          #ginverse = list(Strain = strain_relat$Ainv),
                           verbose = FALSE,
                           family = "gaussian")
     vars = aaply(mcmc_model$VCV[,1:4], 1, function(x) outer(sqrt(x), sqrt(x)))
-    cors = aaply(Gs_r, 1, cov2cor)
+    cors = aaply(Gs, 1, cov2cor)
     covars = cors * vars
     return(list(means = mcmc_model$Sol[,1:4], vars = covars))
 }
 mean_vars = mcmcVar()
 sim_phens = adply(1:1000, 1, function(index) mvtnorm::rmvnorm(1, mean_vars[[1]][index,], mean_vars[[2]][index,,]))
 names(sim_phens) = gsub('variable', '', names(sim_phens))
+sim_strains = mutate(sim_strains, fitness = succes*viab)
+sim_strains = mutate(sim_strains, fitness = succes*viab)
 
-ggplot(sim_phens, aes(tsc*viab)) + geom_histogram() + theme_classic()
+
+suc_plot = ggplot(sim_strains , aes(tsc , succes  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic()
+via_plot = ggplot(sim_strains , aes(tsc , viab    , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic()
+fit_plot = ggplot(sim_strains , aes(tsc , fitness , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , formula = y ~ x + I(x^2), color = 'black') + theme_classic()
+fit_plot = fit_plot + geom_smooth()
+grid.arrange(suc_plot, fit_plot, via_plot, ncol = 3)
