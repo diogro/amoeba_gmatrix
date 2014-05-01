@@ -3,16 +3,19 @@ library(cluster)
 
 source('./readAmoebaData.R')
 
-ggplot(dicty_Phen_std, aes(variable, value, group = interaction(Strain, variable), color=Strain)) + geom_boxplot() + theme_classic()
+ggplot(dicty_Phen, aes(x = Strain, y = value, group = Strain)) +
+geom_boxplot() + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+facet_wrap(~variable, ncol = 4, scale = "free_y")
 
 cast_phen = dcast(dicty_Phen_std, Strain~variable, function(x) mean(x, na.rm = T))
+cast_phen_orig = dcast(dicty_Phen, Strain~variable, function(x) mean(x, na.rm = T))
 plot11 = ggplot(cast_phen, aes(length, succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
 plot12 = ggplot(cast_phen, aes(length, tsc   , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
 plot13 = ggplot(cast_phen, aes(length, viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
 plot21 = ggplot(cast_phen, aes(tsc   , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
 plot22 = ggplot(cast_phen, aes(tsc   , viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
 plot23 = ggplot(cast_phen, aes(viab  , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic()
-png("~/Desktop/real.png", heigh = 720, width = 1080)
+png("./figures/real.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 dev.off()
 
@@ -63,7 +66,7 @@ plot13 = plot13 + geom_point(data = cast_phen, aes(length, viab  , group = 1), c
 plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), color = 'red')
 plot22 = plot22 + geom_point(data = cast_phen, aes(tsc   , viab  , group = 1), color = 'red')
 plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red')
-png("~/Desktop/sim.png", heigh = 720, width = 1080)
+png("./figures/sim.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 dev.off()
 
@@ -112,7 +115,7 @@ plot13 = plot13 + geom_point(data = cast_phen, aes(length, viab  , group = 1), c
 plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), color = 'red')
 plot22 = plot22 + geom_point(data = cast_phen, aes(tsc   , viab  , group = 1), color = 'red')
 plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red')
-png("~/Desktop/sim_relatedness.png", heigh = 720, width = 1080)
+png("./figures/sim_relatedness.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 dev.off()
 
@@ -138,7 +141,7 @@ plot13 = plot13 + geom_point(data = cast_phen, aes(length, viab  , group = 1), c
 plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), color = 'red')
 plot22 = plot22 + geom_point(data = cast_phen, aes(tsc   , viab  , group = 1), color = 'red')
 plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red')
-png("~/Desktop/sim_full.png", heigh = 720, width = 1080)
+png("./figures/sim_full.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 dev.off()
 
@@ -162,12 +165,30 @@ mcmcVar <- function(){
 mean_vars = mcmcVar()
 sim_phens = adply(1:1000, 1, function(index) mvtnorm::rmvnorm(1, mean_vars[[1]][index,], mean_vars[[2]][index,,]))
 names(sim_phens) = gsub('variable', '', names(sim_phens))
-sim_strains = mutate(sim_strains, fitness = succes*viab)
-sim_strains = mutate(sim_strains, fitness = succes*viab)
+sim_phens = mutate(sim_phens, succes = (succes+50)/100)
+sim_phens = mutate(sim_phens, viab = inv.logit(viab))
+sim_phens = mutate(sim_phens, fitness = succes*viab)
 
+cast_phen_orig = mutate(cast_phen_orig, succes = (succes+50)/100)
+cast_phen_orig = mutate(cast_phen_orig, viab = inv.logit(viab))
+cast_phen_orig = mutate(cast_phen_orig, fitness = succes*viab)
 
 suc_plot = ggplot(sim_strains , aes(tsc , succes  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic()
 via_plot = ggplot(sim_strains , aes(tsc , viab    , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic()
-fit_plot = ggplot(sim_strains , aes(tsc , fitness , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , formula = y ~ x + I(x^2), color = 'black') + theme_classic()
-fit_plot = fit_plot + geom_smooth()
+suc_plot = suc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), color = 'red')
+via_plot = via_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), color = 'red')
+fit_plot = ggplot(sim_phens , aes(tsc , fitness , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(color = 'black') + theme_classic()
+#fit_plot = fit_plot + geom_point(data = cast_phen_orig, aes(tsc, fitness  , group = 1), color = 'red')
+png("./figures/fitness_tsc.png", heigh = 500, width = 1080)
 grid.arrange(suc_plot, fit_plot, via_plot, ncol = 3)
+dev.off()
+
+suc_plot = ggplot(sim_strains , aes(length , succes  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic()
+via_plot = ggplot(sim_strains , aes(length , viab    , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic()
+suc_plot= suc_plot + geom_point(data = cast_phen, aes(length, succes, group = 1), color = 'red')
+via_plot = via_plot + geom_point(data = cast_phen, aes(length, viab  , group = 1), color = 'red')
+fit_plot = ggplot(sim_phens , aes(length , fitness , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(color = 'black') + theme_classic()
+#fit_plot = fit_plot + geom_point(data = cast_phen_orig, aes(length, fitness  , group = 1), color = 'red')
+png("./figures/fitness_length.png", heigh = 500, width = 1080)
+grid.arrange(suc_plot, fit_plot, via_plot, ncol = 3)
+dev.off()
