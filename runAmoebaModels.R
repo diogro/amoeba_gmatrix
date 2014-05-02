@@ -79,7 +79,6 @@ mcmcVar <- function(){
                           random = ~idh(variable):Strain,
                           data = dicty_Phen,
                           prior = prior,
-                          #ginverse = list(Strain = strain_relat$Ainv),
                           verbose = FALSE,
                           family = "gaussian")
     vars = aaply(mcmc_model$VCV[,1:4], 1, function(x) outer(sqrt(x), sqrt(x)))
