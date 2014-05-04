@@ -48,4 +48,3 @@ a inverse logit transformation and scaled success to the same interval,
 representing average relative abundance for a given lineage. Fitness,
 the product between viability and success, is then restricted between
 zero and one. 
-
