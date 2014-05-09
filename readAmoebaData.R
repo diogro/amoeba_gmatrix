@@ -19,6 +19,19 @@ dicty_Phen$ID = NULL
 #dicty_Phen_std = dicty_Phen_std[complete.cases(dicty_Phen_std),]
 dicty_Phen = dicty_Phen[complete.cases(dicty_Phen),]
 dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
+dicty_Phen$value[dicty_Phen$variable == 'length'] = log10(dicty_Phen$value[dicty_Phen$variable == 'length'])
+
+dicty_Phen = dicty_Phen[!(dicty_Phen$variable == 'tsc' & dicty_Phen$value > 12),]
+
+#par(mfrow= c(2, 2))
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'viab'], main = 'Viability')
+#qqline(dicty_Phen$value[dicty_Phen$variable == 'viab'])
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'tsc'], main = 'Spore number')
+#qqline(dicty_Phen$value[dicty_Phen$variable == 'tsc'])
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'length'], main = 'Spore size')
+#qqline(dicty_Phen$value[dicty_Phen$variable == 'length'])
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'succes'], main = 'Success')
+#qqline(dicty_Phen$value[dicty_Phen$variable == 'succes'])
 
 dicty_Phen_std = dicty_Phen
 dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'] = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'])
