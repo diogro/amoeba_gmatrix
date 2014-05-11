@@ -1,5 +1,6 @@
 library(ape)
 library(cluster)
+library(corrgram)
 
 source('./readAmoebaData.R')
 
@@ -28,6 +29,7 @@ G_lme4 = VarCorr(model)[[1]]
 rownames(G_lme4) = colnames(G_lme4) = gsub('variable', '', rownames(G_lme4))
 dimnames(attr(G_lme4, 'correlation')) = dimnames(G_lme4)
 names(attr(G_lme4, 'stddev')) = rownames(G_lme4)
+#corrgram(G_lme4)
 
 ##
 # MCMC mixed model with gaussian priors and clonal design
@@ -65,6 +67,7 @@ upper_g = corr_G_mcmc_conf[,,2]
 lower_g = corr_G_mcmc_conf[,,1]
 out_G = rbind(corr_g, lower_g, upper_g)
 write.table(out_G, "./G_correlation.csv")
+#corrgram(corr_g)
 
 plot11 = ggplot(sim_strains, aes(length, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot12 = ggplot(sim_strains, aes(length, tsc   , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
@@ -117,6 +120,7 @@ fit_tsc_plot = ggplot(sim_phens , aes(tsc , fitness , group = 1)) + geom_point(a
 fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
+geom_smooth(color = 'blue', method='lm', formula = y ~ poly(x, 2)) +
 geom_smooth(color = 'black', span = 0.75, method=loess)
 tiff("./figures/fitness_tsc.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
@@ -130,7 +134,8 @@ fit_length_plot = ggplot(sim_phens , aes(length , fitness , group = 1)) + geom_p
 fit_length_plot = fit_length_plot + labs(x = 'Spore size', y = 'Fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
-geom_smooth(color = 'black', span = 0.75, method=loess)
+geom_smooth(color = 'blue', span = 0.75, method=loess) + 
+geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
 tiff("./figures/fitness_spore_size.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_length_plot, fit_length_plot, via_length_plot, ncol = 3)
 dev.off()
