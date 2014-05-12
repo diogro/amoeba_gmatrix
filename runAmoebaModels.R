@@ -4,14 +4,15 @@ library(corrgram)
 
 source('./readAmoebaData.R')
 
-find_CI = function(x){
+find_CI = function(x, prob = 0.95){
     n = length(x)
     xs = sort(x)
-    nint = 0.95*n
-    lowest_int = 10000
+    nint = floor(prob*n)
+    lowest_int = abs(xs[n] - xs[1])
+    #print(lowest_int)
     for(i in 1:(n-nint)){
         current_int = abs(xs[i] - xs[i+nint])
-        if(current_int < lowest_int){
+        if(current_int <= lowest_int){
             lowest_int = current_int
             pos = i
         }
