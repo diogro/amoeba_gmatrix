@@ -4,6 +4,21 @@ library(corrgram)
 
 source('./readAmoebaData.R')
 
+find_CI = function(x){
+    n = length(x)
+    xs = sort(x)
+    nint = 0.95*n
+    lowest_int = 10000
+    for(i in 1:(n-nint)){
+        current_int = abs(xs[i] - xs[i+nint])
+        if(current_int < lowest_int){
+            lowest_int = current_int
+            pos = i
+        }
+    }
+    return(c(xs[pos], xs[pos+nint]))
+}
+
 ggplot(dicty_Phen, aes(x = Strain, y = value, group = Strain)) +
 geom_boxplot() + theme_classic(base_size = 20) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
 facet_wrap(~variable, ncol = 4, scale = "free_y")
@@ -47,12 +62,12 @@ mcmc_model = MCMCglmm(value ~ variable - 1,
                       family = "gaussian")
 summary(mcmc_model)
 Gs = array(mcmc_model$VCV[,1:(num_traits*num_traits)], dim = c(1000, num_traits, num_traits))
-corr_Gs = aaply(array(mcmc_model$VCV[,1:(num_traits*num_traits)], dim = c(1000, num_traits, num_traits)), 1, cov2cor)
+corr_Gs = aaply(Gs, 1, cov2cor)
 G_mcmc = apply(Gs, 2:3, mean)
 corr_G = apply(corr_Gs, 2:3, mean)
-G_mcmc_conf = apply(Gs, 2:3, quantile, c(0.025, 0.975))
+G_mcmc_conf = apply(Gs, 2:3, find_CI)
 G_mcmc_conf = aperm(G_mcmc_conf, c(2, 3, 1))
-corr_G_mcmc_conf = apply(corr_Gs, 2:3, quantile, c(0.025, 0.975))
+corr_G_mcmc_conf = apply(corr_Gs, 2:3, find_CI)
 corr_G_mcmc_conf = aperm(corr_G_mcmc_conf, c(2, 3, 1))
 containsZero = function(x) ifelse(0 > x[1] & 0 < x[2], TRUE, FALSE)
 significant = !aaply(G_mcmc_conf, 1:2, containsZero)
@@ -62,12 +77,12 @@ names(sim_strains) = gsub('variable', '', names(sim_strains))
 herit = summary(mcmc_model)$Gcovariances[c(1, 6, 11, 16),1:3]
 rownames(herit) = c("spore size", "success", "total spore count", "viability")
 write.table(herit, "./heritabilities.csv")
-corr_g = corr_G
-upper_g = corr_G_mcmc_conf[,,2]
-lower_g = corr_G_mcmc_conf[,,1]
+corr_g = round(corr_G, 3)
+upper_g = round(corr_G_mcmc_conf[,,2], 3)
+lower_g = round(corr_G_mcmc_conf[,,1], 3)
 out_G = rbind(corr_g, lower_g, upper_g)
-write.table(out_G, "./G_correlation.csv")
-#corrgram(corr_g)
+#write.table(out_G, "./G_correlation.csv")
+#corrgram(corr_G)
 
 plot11 = ggplot(sim_strains, aes(length, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot12 = ggplot(sim_strains, aes(length, tsc   , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
@@ -139,3 +154,7 @@ geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
 tiff("./figures/fitness_spore_size.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_length_plot, fit_length_plot, via_length_plot, ncol = 3)
 dev.off()
+
+
+find_CI(x)
+
