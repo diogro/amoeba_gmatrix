@@ -128,29 +128,29 @@ cast_phen_orig = mutate(cast_phen_orig, succes = (succes+50)/100)
 cast_phen_orig = mutate(cast_phen_orig, viab = inv.logit(viab))
 cast_phen_orig = mutate(cast_phen_orig, fitness = succes*viab)
 
-suc_tsc_plot = ggplot(sim_strains , aes(tsc , succes  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic(base_size = 20)
-via_tsc_plot = ggplot(sim_strains , aes(tsc , viab    , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic(base_size = 20)
+suc_tsc_plot = ggplot(sim_strains, aes(tsc, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+via_tsc_plot = ggplot(sim_strains, aes(tsc, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Success')
 via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Viability')
 fit_tsc_plot = ggplot(sim_phens , aes(tsc , fitness , group = 1)) + geom_point(alpha = 0.3)  + theme_classic(base_size = 20)
 fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
-geom_smooth(color = 'blue', method='lm', formula = y ~ poly(x, 2)) +
-geom_smooth(color = 'black', span = 0.75, method=loess)
+#geom_smooth(color = 'blue', span = 0.75, method=loess) + 
+geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
 tiff("./figures/fitness_tsc.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
 dev.off()
 
-suc_length_plot = ggplot(sim_strains , aes(length, succes  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic(base_size = 20)
-via_length_plot = ggplot(sim_strains , aes(length, viab    , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm" , color = 'black') + theme_classic(base_size = 20)
+suc_length_plot = ggplot(sim_strains, aes(length, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+via_length_plot = ggplot(sim_strains, aes(length, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 suc_length_plot = suc_length_plot + geom_point(data = cast_phen, aes(length, succes, group = 1), size=3, color = 'red')  + labs(x = 'Spore size', y = 'Success')
 via_length_plot = via_length_plot + geom_point(data = cast_phen, aes(length, viab  , group = 1), size=3, color = 'red') + labs(x = 'Spore size', y = 'Viability')
 fit_length_plot = ggplot(sim_phens , aes(length , fitness , group = 1)) + geom_point(alpha = 0.3) + theme_classic(base_size = 20)
 fit_length_plot = fit_length_plot + labs(x = 'Spore size', y = 'Fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
-geom_smooth(color = 'blue', span = 0.75, method=loess) + 
+#geom_smooth(color = 'blue', span = 0.75, method=loess) + 
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
 tiff("./figures/fitness_spore_size.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_length_plot, fit_length_plot, via_length_plot, ncol = 3)
