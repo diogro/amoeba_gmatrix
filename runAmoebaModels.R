@@ -155,7 +155,3 @@ geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
 tiff("./figures/fitness_spore_size.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_length_plot, fit_length_plot, via_length_plot, ncol = 3)
 dev.off()
-
-
-find_CI(x)
-
