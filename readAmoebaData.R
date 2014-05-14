@@ -21,7 +21,7 @@ dicty_Phen = dicty_Phen[complete.cases(dicty_Phen),]
 dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
 dicty_Phen$value[dicty_Phen$variable == 'length'] = log10(dicty_Phen$value[dicty_Phen$variable == 'length'])
 
-dicty_Phen = dicty_Phen[!(dicty_Phen$variable == 'tsc' & dicty_Phen$value > 12),]
+#dicty_Phen = dicty_Phen[!(dicty_Phen$variable == 'tsc' & dicty_Phen$value > 12),]
 
 #par(mfrow= c(2, 2))
 #qqnorm(dicty_Phen$value[dicty_Phen$variable == 'viab'], main = 'Viability')
