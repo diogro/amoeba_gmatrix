@@ -1,5 +1,6 @@
 library(ape)
 library(cluster)
+library(Morphometrics)
 library(corrgram)
 
 source('./readAmoebaData.R')
@@ -46,6 +47,7 @@ rownames(G_lme4) = colnames(G_lme4) = gsub('variable', '', rownames(G_lme4))
 dimnames(attr(G_lme4, 'correlation')) = dimnames(G_lme4)
 names(attr(G_lme4, 'stddev')) = rownames(G_lme4)
 #corrgram(G_lme4)
+MatrixCompare(G_lme4, G_mcmc)
 
 ##
 # MCMC mixed model with gaussian priors and clonal design
