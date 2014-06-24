@@ -7,7 +7,7 @@ library(MCMCglmm)
 library(gridExtra)
 library(gtools)
 
-dicty_Phen = read.csv("./dicty_phenotypes.csv")
+dicty_Phen = read.csv("./data/dicty_phenotypes.csv")
 #dicty_Phen_std = read.csv("./dicty_phenotypes_standardized.csv")
 #dicty_Phen_std$Strain = paste("X", dicty_Phen_std$Strain, sep = '')
 dicty_Phen$Strain = paste("X", dicty_Phen$Strain, sep = '')

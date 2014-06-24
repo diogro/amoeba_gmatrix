@@ -47,7 +47,7 @@ rownames(G_lme4) = colnames(G_lme4) = gsub('variable', '', rownames(G_lme4))
 dimnames(attr(G_lme4, 'correlation')) = dimnames(G_lme4)
 names(attr(G_lme4, 'stddev')) = rownames(G_lme4)
 #corrgram(G_lme4)
-MatrixCompare(G_lme4, G_mcmc)
+#MatrixCompare(G_lme4, G_mcmc)
 
 ##
 # MCMC mixed model with gaussian priors and clonal design
@@ -138,7 +138,7 @@ fit_tsc_plot = ggplot(sim_phens , aes(tsc , fitness , group = 1)) + geom_point(a
 fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
-#geom_smooth(color = 'blue', span = 0.75, method=loess) + 
+#geom_smooth(color = 'blue', span = 0.75, method=loess) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
 tiff("./figures/fitness_tsc.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
@@ -152,7 +152,7 @@ fit_length_plot = ggplot(sim_phens , aes(length , fitness , group = 1)) + geom_p
 fit_length_plot = fit_length_plot + labs(x = 'Spore size', y = 'Fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
-#geom_smooth(color = 'blue', span = 0.75, method=loess) + 
+#geom_smooth(color = 'blue', span = 0.75, method=loess) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
 tiff("./figures/fitness_spore_size.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_length_plot, fit_length_plot, via_length_plot, ncol = 3)
