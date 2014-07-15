@@ -21,32 +21,32 @@ find_CI = function(x, prob = 0.95){
     return(c(xs[pos], xs[pos+nint]))
 }
 
-ggplot(dicty_Phen, aes(x = Strain, y = value, group = Strain)) +
+ggplot(dicty_Phen, aes(x = strain, y = value, group = strain)) +
 geom_boxplot() + theme_classic(base_size = 20) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
 facet_wrap(~variable, ncol = 4, scale = "free_y")
 
-cast_phen = dcast(dicty_Phen_std, Strain~variable, function(x) mean(x, na.rm = T))
-cast_phen_orig = dcast(dicty_Phen, Strain~variable, function(x) mean(x, na.rm = T))
-plot11 = ggplot(cast_phen, aes(length, succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
-plot12 = ggplot(cast_phen, aes(length, tsc   , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
-plot13 = ggplot(cast_phen, aes(length, viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
+cast_phen = dcast(dicty_Phen_std, strain~variable, function(x) mean(x, na.rm = T))
+cast_phen_orig = dcast(dicty_Phen, strain~variable, function(x) mean(x, na.rm = T))
+plot11 = ggplot(cast_phen, aes(size, succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
+plot12 = ggplot(cast_phen, aes(size, tsc   , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
+plot13 = ggplot(cast_phen, aes(size, viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 plot21 = ggplot(cast_phen, aes(tsc   , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 plot22 = ggplot(cast_phen, aes(tsc   , viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 plot23 = ggplot(cast_phen, aes(viab  , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 #png("./figures/real.png", heigh = 720, width = 1080)
-#grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
+grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 #dev.off()
 
 ##
 # lme4 traditional mixed model with clonal design
 ##
 
-model = lmer(value ~ variable + (0 + variable|Strain), data = dicty_Phen_std)
+model = lmer(value ~ variable + (0 + variable|strain), data = dicty_Phen_std)
 G_lme4 = VarCorr(model)[[1]]
 rownames(G_lme4) = colnames(G_lme4) = gsub('variable', '', rownames(G_lme4))
 dimnames(attr(G_lme4, 'correlation')) = dimnames(G_lme4)
 names(attr(G_lme4, 'stddev')) = rownames(G_lme4)
-#corrgram(G_lme4)
+corrgram(G_lme4)
 #MatrixCompare(G_lme4, G_mcmc)
 
 ##
@@ -54,14 +54,14 @@ names(attr(G_lme4, 'stddev')) = rownames(G_lme4)
 ##
 
 num_traits = length(unique(dicty_Phen_std$variable))
-num_strains = length(unique(dicty_Phen_std$Strain))
+num_strains = length(unique(dicty_Phen_std$strain))
 prior = list(R = list(V = 1, n = 0.002),
              G = list(G1 = list(V = diag(num_traits) * 0.02, n = num_traits+1)))
 mcmc_model = MCMCglmm(value ~ variable - 1,
-                      random = ~us(variable):Strain,
+                      random = ~us(variable):strain,
                       data = dicty_Phen_std,
                       prior = prior,
-                      verbose = FALSE,
+                      verbose = TRUE,
                       family = "gaussian")
 summary(mcmc_model)
 Gs = array(mcmc_model$VCV[,1:(num_traits*num_traits)], dim = c(1000, num_traits, num_traits))
@@ -87,19 +87,19 @@ out_G = rbind(corr_g, lower_g, upper_g)
 #write.table(out_G, "./G_correlation.csv")
 #corrgram(corr_G)
 
-plot11 = ggplot(sim_strains, aes(length, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-plot12 = ggplot(sim_strains, aes(length, tsc   , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-plot13 = ggplot(sim_strains, aes(length, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+plot11 = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+plot12 = ggplot(sim_strains, aes(size, tsc   , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+plot13 = ggplot(sim_strains, aes(size, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot21 = ggplot(sim_strains, aes(tsc   , succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot22 = ggplot(sim_strains, aes(tsc   , viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot23 = ggplot(sim_strains, aes(viab  , succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-plot11 = plot11 + geom_point(data = cast_phen, aes(length, succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Success')
-plot12 = plot12 + geom_point(data = cast_phen, aes(length, tsc   , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Spore number')
-plot13 = plot13 + geom_point(data = cast_phen, aes(length, viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Viability')
+plot11 = plot11 + geom_point(data = cast_phen, aes(size, succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Success')
+plot12 = plot12 + geom_point(data = cast_phen, aes(size, tsc   , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Spore number')
+plot13 = plot13 + geom_point(data = cast_phen, aes(size, viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Viability')
 plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Success')
 plot22 = plot22 + geom_point(data = cast_phen, aes(tsc   , viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Viability')
 plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red', size = 3) + labs(x = 'Viability', y = 'Success')
-tiff("./figures/simulated.tiff", heigh = 720, width = 1080)
+png("./figures/simulated.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 dev.off()
 
@@ -109,7 +109,7 @@ dev.off()
 
 mcmcVar <- function(){
     mcmc_model = MCMCglmm(value ~ variable - 1,
-                          random = ~idh(variable):Strain,
+                          random = ~idh(variable):strain,
                           data = dicty_Phen,
                           prior = prior,
                           verbose = FALSE,
@@ -140,20 +140,20 @@ fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Fitness') +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
 #geom_smooth(color = 'blue', span = 0.75, method=loess) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
-tiff("./figures/fitness_tsc.tiff", heigh = 500, width = 1080)
+png("./figures/fitness_tsc.png", heigh = 500, width = 1080)
 grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
 dev.off()
 
-suc_length_plot = ggplot(sim_strains, aes(length, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-via_length_plot = ggplot(sim_strains, aes(length, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-suc_length_plot = suc_length_plot + geom_point(data = cast_phen, aes(length, succes, group = 1), size=3, color = 'red')  + labs(x = 'Spore size', y = 'Success')
-via_length_plot = via_length_plot + geom_point(data = cast_phen, aes(length, viab  , group = 1), size=3, color = 'red') + labs(x = 'Spore size', y = 'Viability')
-fit_length_plot = ggplot(sim_phens , aes(length , fitness , group = 1)) + geom_point(alpha = 0.3) + theme_classic(base_size = 20)
-fit_length_plot = fit_length_plot + labs(x = 'Spore size', y = 'Fitness') +
+suc_size_plot = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+via_size_plot = ggplot(sim_strains, aes(size, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+suc_size_plot = suc_size_plot + geom_point(data = cast_phen, aes(size, succes, group = 1), size=3, color = 'red')  + labs(x = 'Spore size', y = 'Success')
+via_size_plot = via_size_plot + geom_point(data = cast_phen, aes(size, viab  , group = 1), size=3, color = 'red') + labs(x = 'Spore size', y = 'Viability')
+fit_size_plot = ggplot(sim_phens , aes(size , fitness , group = 1)) + geom_point(alpha = 0.3) + theme_classic(base_size = 20)
+fit_size_plot = fit_size_plot + labs(x = 'Spore size', y = 'Fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
 #geom_smooth(color = 'blue', span = 0.75, method=loess) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2))
-tiff("./figures/fitness_spore_size.tiff", heigh = 500, width = 1080)
-grid.arrange(suc_length_plot, fit_length_plot, via_length_plot, ncol = 3)
+png("./figures/fitness_spore_size.png", heigh = 500, width = 1080)
+grid.arrange(suc_size_plot, fit_size_plot, via_size_plot, ncol = 3)
 dev.off()
