@@ -1,7 +1,7 @@
-library(ape)
-library(cluster)
-library(Morphometrics)
-library(corrgram)
+if(!require(ape)) { install.packages("ape"); library(ape) }
+if(!require(cluster)) { install.packages("cluster"); library(cluster) }
+if(!require(Morphometrics)) { install.packages("Morphometrics"); library(Morphometrics) }
+if(!require(corrgram)) { install.packages("corrgram"); library(corrgram) }
 
 source('./readAmoebaData.R')
 
@@ -34,7 +34,7 @@ plot21 = ggplot(cast_phen, aes(tsc   , succes, group = 1)) + geom_point() + geom
 plot22 = ggplot(cast_phen, aes(tsc   , viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 plot23 = ggplot(cast_phen, aes(viab  , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 #png("./figures/real.png", heigh = 720, width = 1080)
-grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
+#grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 #dev.off()
 
 ##
@@ -46,7 +46,7 @@ G_lme4 = VarCorr(model)[[1]]
 rownames(G_lme4) = colnames(G_lme4) = gsub('variable', '', rownames(G_lme4))
 dimnames(attr(G_lme4, 'correlation')) = dimnames(G_lme4)
 names(attr(G_lme4, 'stddev')) = rownames(G_lme4)
-corrgram(G_lme4)
+#corrgram(G_lme4)
 #MatrixCompare(G_lme4, G_mcmc)
 
 ##
@@ -85,21 +85,30 @@ upper_g = round(corr_G_mcmc_conf[,,2], 3)
 lower_g = round(corr_G_mcmc_conf[,,1], 3)
 out_G = rbind(corr_g, lower_g, upper_g)
 #write.table(out_G, "~/Desktop/G_correlation.csv")
-corrgram(corr_G)
+#corrgram(corr_G)
 
-plot11 = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20) 
+plot11 = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot12 = ggplot(sim_strains, aes(size, tsc   , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot13 = ggplot(sim_strains, aes(size, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot21 = ggplot(sim_strains, aes(tsc   , succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot22 = ggplot(sim_strains, aes(tsc   , viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot23 = ggplot(sim_strains, aes(viab  , succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-plot11 = plot11 + geom_point(data = cast_phen, aes(size, succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Success') + scale_x_continuous(limits = c(-2, 2))
-plot12 = plot12 + geom_point(data = cast_phen, aes(size, tsc   , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Spore number') + scale_x_continuous(limits = c(-2, 2))
-plot13 = plot13 + geom_point(data = cast_phen, aes(size, viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Viability') + scale_x_continuous(limits = c(-2, 2))
-plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Success') + scale_x_continuous(limits = c(-2, 2))
-plot22 = plot22 + geom_point(data = cast_phen, aes(tsc   , viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Viability') + scale_x_continuous(limits = c(-2, 2))
-plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red', size = 3) + labs(x = 'Viability', y = 'Success') + scale_x_continuous(limits = c(-2, 2))
+plot11 = plot11 + geom_point(data = cast_phen, aes(size, succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Success') +
+ scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
+plot12 = plot12 + geom_point(data = cast_phen, aes(size, tsc   , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Spore number') +
+ scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
+plot13 = plot13 + geom_point(data = cast_phen, aes(size, viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Viability') +
+ scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
+plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Success') +
+ scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
+plot22 = plot22 + geom_point(data = cast_phen, aes(tsc   , viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Viability') +
+ scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
+plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red', size = 3) + labs(x = 'Viability', y = 'Success') + 
+ scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 png("./figures/simulated.png", heigh = 720, width = 1080)
+grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
+dev.off()
+tiff("./figures/simulated.tiff", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 dev.off()
 
@@ -134,10 +143,12 @@ cast_phen_orig = mutate(cast_phen_orig, fitness = succes*viab)
 
 suc_tsc_plot = ggplot(sim_strains, aes(tsc, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 via_tsc_plot = ggplot(sim_strains, aes(tsc, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Success') + scale_x_continuous(limits = c(-1.5, 1.5))
-via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Viability') + scale_x_continuous(limits = c(-1.5, 1.5))
+suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Success') +
+ scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
+via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Viability') +
+ scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
 fit_tsc_plot = ggplot(sim_phens , aes(tsc , fitness , group = 1)) + geom_point(alpha = 0.3)  + theme_classic(base_size = 20)
-fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Fitness') +
+fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Social fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
 #geom_smooth(color = 'blue', span = 0.75, method=loess) +
@@ -145,25 +156,36 @@ geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_co
 png("./figures/fitness_tsc.png", heigh = 500, width = 1080)
 grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
 dev.off()
+tiff("./figures/fitness_tsc.tiff", heigh = 500, width = 1080)
+grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
+dev.off()
 
 suc_size_plot = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 via_size_plot = ggplot(sim_strains, aes(size, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-suc_size_plot = suc_size_plot + geom_point(data = cast_phen, aes(size, succes, group = 1), size=3, color = 'red')  + labs(x = 'Spore size', y = 'Success') + scale_x_continuous(limits = c(-2, 2))
-via_size_plot = via_size_plot + geom_point(data = cast_phen, aes(size, viab  , group = 1), size=3, color = 'red') + labs(x = 'Spore size', y = 'Viability') + scale_x_continuous(limits = c(-2, 2))
+suc_size_plot = suc_size_plot + geom_point(data = cast_phen, aes(size, succes, group = 1), size=3, color = 'red')  + labs(x = 'Spore size', y = 'Success') +
+scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
+via_size_plot = via_size_plot + geom_point(data = cast_phen, aes(size, viab  , group = 1), size=3, color = 'red') + labs(x = 'Spore size', y = 'Viability') +
+scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
+scale_x_continuous(limits = c(-2, 2))
 fit_size_plot = ggplot(sim_phens , aes(size , fitness , group = 1)) + geom_point(alpha = 0.3) + theme_classic(base_size = 20)
-fit_size_plot = fit_size_plot + labs(x = 'Spore size', y = 'Fitness') +
+fit_size_plot = fit_size_plot + labs(x = 'Spore size', y = 'Social fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
 #geom_smooth(color = 'blue', span = 0.75, method=loess) +
-geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_continuous(limits = c(-2, 2))
+geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_continuous(limits = c(-2.2, 2.2))
 png("./figures/fitness_spore_size.png", heigh = 500, width = 1080)
 grid.arrange(suc_size_plot, fit_size_plot, via_size_plot, ncol = 3)
 dev.off()
+tiff("./figures/fitness_spore_size.tiff", heigh = 500, width = 1080)
+grid.arrange(suc_size_plot, fit_size_plot, via_size_plot, ncol = 3)
+dev.off()
 
-suc_tsc_plot = ggplot(sim_strains, aes(tsc, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+suc_tsc_plot = ggplot(sim_strains, aes(tsc, size, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 via_tsc_plot = ggplot(sim_strains, aes(tsc, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Success') + scale_x_continuous(limits = c(-1.5, 1.5))
-via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Viability') + scale_x_continuous(limits = c(-1.5, 1.5))
+suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Success') +
+scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
+via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Viability') +
+scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
 fit_tsc_plot = ggplot(sim_phens , aes(tsc , clonal_fitness , group = 1)) + geom_point(alpha = 0.3)  + theme_classic(base_size = 20)
 fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Clonal fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
@@ -173,17 +195,32 @@ geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_co
 png("./figures/clonal_fitness_tsc.png", heigh = 500, width = 1080)
 grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
 dev.off()
+tiff("./figures/clonal_fitness_tsc.tiff", heigh = 500, width = 1080)
+grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
+dev.off()
 
-suc_size_plot = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-via_size_plot = ggplot(sim_strains, aes(size, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-suc_size_plot = suc_size_plot + geom_point(data = cast_phen, aes(size, succes, group = 1), size=3, color = 'red')  + labs(x = 'Spore size', y = 'Success') + scale_x_continuous(limits = c(-2, 2))
-via_size_plot = via_size_plot + geom_point(data = cast_phen, aes(size, viab  , group = 1), size=3, color = 'red') + labs(x = 'Spore size', y = 'Viability') + scale_x_continuous(limits = c(-2, 2))
+suc_size_plot = ggplot(sim_strains, aes(size, tsc, group = 1)) +
+geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') +
+theme_classic(base_size = 20)
+via_size_plot = ggplot(sim_strains, aes(size, viab , group = 1)) +
+geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') +
+theme_classic(base_size = 20)
+suc_size_plot = suc_size_plot + geom_point(data = cast_phen, aes(size, succes, group = 1), size=3, color = 'red') +
+labs(x = 'Spore size', y = 'Success') +
+scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
+via_size_plot = via_size_plot + geom_point(data = cast_phen, aes(size, viab , group = 1), size=3, color = 'red') +
+labs(x = 'Spore size', y = 'Viability') +
+scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 fit_size_plot = ggplot(sim_phens , aes(size , clonal_fitness , group = 1)) + geom_point(alpha = 0.3) + theme_classic(base_size = 20)
 fit_size_plot = fit_size_plot + labs(x = 'Spore size', y = 'Clonal fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
 #geom_smooth(color = 'blue', span = 0.75, method=loess) +
-geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_continuous(limits = c(-2, 2))
+geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) +
+scale_x_continuous(limits = c(-2.2, 2.2))
 png("./figures/clonal_fitness_spore_size.png", heigh = 500, width = 1080)
+grid.arrange(suc_size_plot, fit_size_plot, via_size_plot, ncol = 3)
+dev.off()
+tiff("./figures/clonal_fitness_spore_size.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_size_plot, fit_size_plot, via_size_plot, ncol = 3)
 dev.off()
