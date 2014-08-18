@@ -206,7 +206,7 @@ via_size_plot = ggplot(sim_strains, aes(size, viab , group = 1)) +
 geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') +
 theme_classic(base_size = 20)
 suc_size_plot = suc_size_plot + geom_point(data = cast_phen, aes(size, succes, group = 1), size=3, color = 'red') +
-labs(x = 'Spore size', y = 'Success') +
+labs(x = 'Spore size', y = 'Spore number') +
 scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 via_size_plot = via_size_plot + geom_point(data = cast_phen, aes(size, viab , group = 1), size=3, color = 'red') +
 labs(x = 'Spore size', y = 'Viability') +

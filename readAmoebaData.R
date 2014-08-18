@@ -23,15 +23,15 @@ dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_P
 
 #dicty_Phen = dicty_Phen[!(dicty_Phen$variable == 'tsc' & dicty_Phen$value > 12),]
 
-par(mfrow= c(2, 2))
-qqnorm(dicty_Phen$value[dicty_Phen$variable == 'viab'], main = 'Viability')
-qqline(dicty_Phen$value[dicty_Phen$variable == 'viab'])
-qqnorm(dicty_Phen$value[dicty_Phen$variable == 'tsc'], main = 'Spore number')
-qqline(dicty_Phen$value[dicty_Phen$variable == 'tsc'])
-qqnorm(dicty_Phen$value[dicty_Phen$variable == 'size'], main = 'Spore size')
-qqline(dicty_Phen$value[dicty_Phen$variable == 'size'])
-qqnorm(dicty_Phen$value[dicty_Phen$variable == 'succes'], main = 'Success')
-qqline(dicty_Phen$value[dicty_Phen$variable == 'succes'])
+#par(mfrow= c(2, 2))
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'viab'], main = 'Viability')
+#qqline(dicty_Phen$value[dicty_Phen$variable == 'viab'])
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'tsc'], main = 'Spore number')
+#qqline(dicty_Phen$value[dicty_Phen$variable == 'tsc'])
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'size'], main = 'Spore size')
+#qqline(dicty_Phen$value[dicty_Phen$variable == 'size'])
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'succes'], main = 'Success')
+#qqline(dicty_Phen$value[dicty_Phen$variable == 'succes'])
 
 dicty_Phen_std = dicty_Phen
 dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'] = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'])
