@@ -140,6 +140,8 @@ sim_phens = mutate(sim_phens, clonal_fitness = tsc_scaled*viab)
 cast_phen_orig = mutate(cast_phen_orig, succes = (succes+50)/100)
 cast_phen_orig = mutate(cast_phen_orig, viab = inv.logit(viab))
 cast_phen_orig = mutate(cast_phen_orig, fitness = succes*viab)
+cast_phen_orig = mutate(cast_phen_orig, tsc_scaled = inv.logit(tsc))
+cast_phen_orig = mutate(cast_phen_orig, clonal_fitness = tsc_scaled*viab)
 
 suc_tsc_plot = ggplot(sim_strains, aes(tsc, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 via_tsc_plot = ggplot(sim_strains, aes(tsc, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
@@ -224,3 +226,11 @@ dev.off()
 tiff("./figures/clonal_fitness_spore_size.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_size_plot, fit_size_plot, via_size_plot, ncol = 3)
 dev.off()
+
+sim_strains$succes_unscaled = sim_phens$succes
+sim_strains$viab_unscaled   = sim_phens$viab
+sim_strains$tsc_unscaled    = sim_phens$tsc_scaled
+sim_strains$fitness         = sim_phens$fitness
+sim_strains$clonal_fitness  = sim_phens$clonal_fitness
+write.csv(sim_strains[-1], "corrected_simulated_lineages.csv", row.names = FALSE)
+write.csv(cast_phen_orig, "mean_observed_lineages.csv", row.names = FALSE)
