@@ -90,9 +90,9 @@ out_G = rbind(corr_g, lower_g, upper_g)
 plot11 = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot12 = ggplot(sim_strains, aes(size, tsc   , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot13 = ggplot(sim_strains, aes(size, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-plot21 = ggplot(sim_strains, aes(tsc   , succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-plot22 = ggplot(sim_strains, aes(tsc   , viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-plot23 = ggplot(sim_strains, aes(viab  , succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+plot21 = ggplot(sim_strains, aes(tsc , succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+plot22 = ggplot(sim_strains, aes(tsc , viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
+plot23 = ggplot(sim_strains, aes(viab, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot11 = plot11 + geom_point(data = cast_phen, aes(size, succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Success') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 plot12 = plot12 + geom_point(data = cast_phen, aes(size, tsc   , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Spore number') +
@@ -131,16 +131,16 @@ mcmcVar <- function(){
 mean_vars = mcmcVar()
 sim_phens = adply(1:1000, 1, function(index) mvtnorm::rmvnorm(1, mean_vars[[1]][index,], mean_vars[[2]][index,,]))
 names(sim_phens) = gsub('variable', '', names(sim_phens))
-sim_phens = mutate(sim_phens, succes = (succes+50)/100)
-sim_phens = mutate(sim_phens, viab = inv.logit(viab))
-sim_phens = mutate(sim_phens, tsc_scaled = inv.logit(tsc))
-sim_phens = mutate(sim_phens, fitness = succes*viab)
+sim_phens = mutate(sim_phens, succes         = (succes+50)/100)
+sim_phens = mutate(sim_phens, viab           = inv.logit(viab))
+sim_phens = mutate(sim_phens, tsc_scaled     = inv.logit(tsc))
+sim_phens = mutate(sim_phens, fitness        = succes*viab)
 sim_phens = mutate(sim_phens, clonal_fitness = tsc_scaled*viab)
 
-cast_phen_orig = mutate(cast_phen_orig, succes = (succes+50)/100)
-cast_phen_orig = mutate(cast_phen_orig, viab = inv.logit(viab))
-cast_phen_orig = mutate(cast_phen_orig, fitness = succes*viab)
-cast_phen_orig = mutate(cast_phen_orig, tsc_scaled = inv.logit(tsc))
+cast_phen_orig = mutate(cast_phen_orig, succes_01      = (succes+50)/100)
+cast_phen_orig = mutate(cast_phen_orig, viab_unscaled  = inv.logit(viab))
+cast_phen_orig = mutate(cast_phen_orig, fitness        = succes*viab)
+cast_phen_orig = mutate(cast_phen_orig, tsc_scaled     = inv.logit(tsc))
 cast_phen_orig = mutate(cast_phen_orig, clonal_fitness = tsc_scaled*viab)
 
 suc_tsc_plot = ggplot(sim_strains, aes(tsc, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
@@ -188,7 +188,7 @@ suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, grou
 scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
 via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Viability') +
 scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
-fit_tsc_plot = ggplot(sim_phens , aes(tsc , clonal_fitness , group = 1)) + geom_point(alpha = 0.3)  + theme_classic(base_size = 20)
+fit_tsc_plot = ggplot(sim_phens, aes(tsc , clonal_fitness , group = 1)) + geom_point(alpha = 0.3)  + theme_classic(base_size = 20)
 fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Clonal fitness') +
 #geom_smooth(color = 'red', span = 0.1, method = loess) +
 #geom_smooth(color = 'blue', span = 0.5, method = loess) +
@@ -233,4 +233,5 @@ sim_strains$tsc_unscaled    = sim_phens$tsc_scaled
 sim_strains$fitness         = sim_phens$fitness
 sim_strains$clonal_fitness  = sim_phens$clonal_fitness
 write.csv(sim_strains[-1], "corrected_simulated_lineages.csv", row.names = FALSE)
-write.csv(cast_phen_orig, "mean_observed_lineages.csv", row.names = FALSE)
+write.csv(cast_phen_orig, "mean_observed_unscaled_lineages.csv", row.names = FALSE)
+write.csv(cast_phen, "mean_observed_scaled_lineages.csv", row.names = FALSE)

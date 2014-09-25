@@ -19,9 +19,6 @@ dicty_Phen$variable = gsub('TSC', 'tsc', dicty_Phen$variable)
 
 dicty_Phen = filter(dicty_Phen, (value > 0 & variable == 'viab') | variable != 'viab')
 dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
-#dicty_Phen$value[dicty_Phen$variable == 'length'] = log10(dicty_Phen$value[dicty_Phen$variable == 'length'])
-
-#dicty_Phen = dicty_Phen[!(dicty_Phen$variable == 'tsc' & dicty_Phen$value > 12),]
 
 #par(mfrow= c(2, 2))
 #qqnorm(dicty_Phen$value[dicty_Phen$variable == 'viab'], main = 'Viability')
@@ -35,9 +32,9 @@ dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_P
 
 dicty_Phen_std = dicty_Phen
 dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'] = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'])
-dicty_Phen_std$value[dicty_Phen_std$variable == 'size'] = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'size'])
-dicty_Phen_std$value[dicty_Phen_std$variable == 'tsc'] = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'tsc'])
-dicty_Phen_std$value[dicty_Phen_std$variable == 'viab'] = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'viab'])
+dicty_Phen_std$value[dicty_Phen_std$variable == 'size']   = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'size'])
+dicty_Phen_std$value[dicty_Phen_std$variable == 'tsc']    = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'tsc'])
+dicty_Phen_std$value[dicty_Phen_std$variable == 'viab']   = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'viab'])
 
 ggplot(dicty_Phen_std, aes(value, valueA, color  = variable)) + geom_point()
 
