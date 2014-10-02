@@ -1,9 +1,14 @@
 if(!require(ape)) { install.packages("ape"); library(ape) }
 if(!require(cluster)) { install.packages("cluster"); library(cluster) }
-if(!require(Morphometrics)) { install.packages("Morphometrics"); library(Morphometrics) }
+if(!require(Morphometrics)) {
+    if(!require(devtools))
+        instal.packages("devtools")
+    devtools::install_github("Morphometrics", "lem-usp"); library(Morphometrics) }
 if(!require(corrgram)) { install.packages("corrgram"); library(corrgram) }
 
 source('./readAmoebaData.R')
+
+#Function for searching smallest high probability intervals
 
 find_CI = function(x, prob = 0.95){
     n = length(x)
@@ -21,9 +26,13 @@ find_CI = function(x, prob = 0.95){
     return(c(xs[pos], xs[pos+nint]))
 }
 
+# Diagnostic plot for observed data
+
 ggplot(dicty_Phen, aes(x = strain, y = value, group = strain)) +
 geom_boxplot() + theme_classic(base_size = 20) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
 facet_wrap(~variable, ncol = 4, scale = "free_y")
+
+# Plot of observed means per lineage and linear lines
 
 cast_phen = dcast(dicty_Phen_std, strain~variable, function(x) mean(x, na.rm = T))
 cast_phen_orig = dcast(dicty_Phen, strain~variable, function(x) mean(x, na.rm = T))
@@ -34,7 +43,7 @@ plot21 = ggplot(cast_phen, aes(tsc   , succes, group = 1)) + geom_point() + geom
 plot22 = ggplot(cast_phen, aes(tsc   , viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 plot23 = ggplot(cast_phen, aes(viab  , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 #png("./figures/real.png", heigh = 720, width = 1080)
-#grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
+grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 #dev.off()
 
 ##
@@ -84,8 +93,12 @@ corr_g = round(corr_G, 3)
 upper_g = round(corr_G_mcmc_conf[,,2], 3)
 lower_g = round(corr_G_mcmc_conf[,,1], 3)
 out_G = rbind(corr_g, lower_g, upper_g)
-#write.table(out_G, "~/Desktop/G_correlation.csv")
+write.table(out_G, "./G_correlation.csv")
 #corrgram(corr_G)
+
+##
+# Plotting scaled simulated lineages, fitted linear line and observed means
+##
 
 plot11 = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot12 = ggplot(sim_strains, aes(size, tsc   , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
@@ -103,7 +116,7 @@ plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), c
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 plot22 = plot22 + geom_point(data = cast_phen, aes(tsc   , viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Viability') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
-plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red', size = 3) + labs(x = 'Viability', y = 'Success') + 
+plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red', size = 3) + labs(x = 'Viability', y = 'Success') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 png("./figures/simulated.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
@@ -115,6 +128,8 @@ dev.off()
 ##
 # Fitness model
 ##
+
+# MCMC mixed model with gaussian priors and clonal design and original variances included
 
 mcmcVar <- function(){
     mcmc_model = MCMCglmm(value ~ variable - 1,
@@ -151,9 +166,6 @@ via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , grou
  scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
 fit_tsc_plot = ggplot(sim_phens , aes(tsc , fitness , group = 1)) + geom_point(alpha = 0.3)  + theme_classic(base_size = 20)
 fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Social fitness') +
-#geom_smooth(color = 'red', span = 0.1, method = loess) +
-#geom_smooth(color = 'blue', span = 0.5, method = loess) +
-#geom_smooth(color = 'blue', span = 0.75, method=loess) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_continuous(limits = c(-1, 1))
 png("./figures/fitness_tsc.png", heigh = 500, width = 1080)
 grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
@@ -171,9 +183,6 @@ scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 
 scale_x_continuous(limits = c(-2, 2))
 fit_size_plot = ggplot(sim_phens , aes(size , fitness , group = 1)) + geom_point(alpha = 0.3) + theme_classic(base_size = 20)
 fit_size_plot = fit_size_plot + labs(x = 'Spore size', y = 'Social fitness') +
-#geom_smooth(color = 'red', span = 0.1, method = loess) +
-#geom_smooth(color = 'blue', span = 0.5, method = loess) +
-#geom_smooth(color = 'blue', span = 0.75, method=loess) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_continuous(limits = c(-2.2, 2.2))
 png("./figures/fitness_spore_size.png", heigh = 500, width = 1080)
 grid.arrange(suc_size_plot, fit_size_plot, via_size_plot, ncol = 3)
@@ -190,9 +199,6 @@ via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , grou
 scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
 fit_tsc_plot = ggplot(sim_phens, aes(tsc , clonal_fitness , group = 1)) + geom_point(alpha = 0.3)  + theme_classic(base_size = 20)
 fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Clonal fitness') +
-#geom_smooth(color = 'red', span = 0.1, method = loess) +
-#geom_smooth(color = 'blue', span = 0.5, method = loess) +
-#geom_smooth(color = 'blue', span = 0.75, method=loess) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_continuous(limits = c(-1, 1))
 png("./figures/clonal_fitness_tsc.png", heigh = 500, width = 1080)
 grid.arrange(suc_tsc_plot, fit_tsc_plot, via_tsc_plot, ncol = 3)
@@ -215,9 +221,6 @@ labs(x = 'Spore size', y = 'Viability') +
 scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 fit_size_plot = ggplot(sim_phens , aes(size , clonal_fitness , group = 1)) + geom_point(alpha = 0.3) + theme_classic(base_size = 20)
 fit_size_plot = fit_size_plot + labs(x = 'Spore size', y = 'Clonal fitness') +
-#geom_smooth(color = 'red', span = 0.1, method = loess) +
-#geom_smooth(color = 'blue', span = 0.5, method = loess) +
-#geom_smooth(color = 'blue', span = 0.75, method=loess) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) +
 scale_x_continuous(limits = c(-2.2, 2.2))
 png("./figures/clonal_fitness_spore_size.png", heigh = 500, width = 1080)
@@ -227,11 +230,7 @@ tiff("./figures/clonal_fitness_spore_size.tiff", heigh = 500, width = 1080)
 grid.arrange(suc_size_plot, fit_size_plot, via_size_plot, ncol = 3)
 dev.off()
 
-sim_strains$succes_unscaled = sim_phens$succes
-sim_strains$viab_unscaled   = sim_phens$viab
-sim_strains$tsc_unscaled    = sim_phens$tsc_scaled
-sim_strains$fitness         = sim_phens$fitness
-sim_strains$clonal_fitness  = sim_phens$clonal_fitness
-write.csv(sim_strains[-1], "corrected_simulated_lineages.csv", row.names = FALSE)
+write.csv(sim_strains[-1], "scaled_simulated_lineages.csv", row.names = FALSE)
+write.csv(sim_phens[-1], "unscaled_simulated_lineages.csv", row.names = FALSE)
 write.csv(cast_phen_orig, "mean_observed_unscaled_lineages.csv", row.names = FALSE)
 write.csv(cast_phen, "mean_observed_scaled_lineages.csv", row.names = FALSE)

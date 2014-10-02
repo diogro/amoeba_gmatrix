@@ -17,12 +17,12 @@ names(dicty_Phen)[[3]] = 'variable'
 dicty_Phen$variable = gsub('succ', 'succes', dicty_Phen$variable)
 dicty_Phen$variable = gsub('TSC', 'tsc', dicty_Phen$variable)
 
-dicty_Phen = filter(dicty_Phen, (value > 0 & variable == 'viab') | variable != 'viab')
-dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
+#dicty_Phen = filter(dicty_Phen, (value > 0 & variable == 'viab') | variable != 'viab')
+#dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
 
 #par(mfrow= c(2, 2))
-#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'viab'], main = 'Viability')
-#qqline(dicty_Phen$value[dicty_Phen$variable == 'viab'])
+qqnorm(dicty_Phen$value[dicty_Phen$variable == 'viab'], main = 'Viability')
+qqline(dicty_Phen$value[dicty_Phen$variable == 'viab'])
 #qqnorm(dicty_Phen$value[dicty_Phen$variable == 'tsc'], main = 'Spore number')
 #qqline(dicty_Phen$value[dicty_Phen$variable == 'tsc'])
 #qqnorm(dicty_Phen$value[dicty_Phen$variable == 'size'], main = 'Spore size')
@@ -36,7 +36,7 @@ dicty_Phen_std$value[dicty_Phen_std$variable == 'size']   = scale(dicty_Phen_std
 dicty_Phen_std$value[dicty_Phen_std$variable == 'tsc']    = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'tsc'])
 dicty_Phen_std$value[dicty_Phen_std$variable == 'viab']   = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'viab'])
 
-ggplot(dicty_Phen_std, aes(value, valueA, color  = variable)) + geom_point()
+ggplot(dicty_Phen_std, aes(value, valueA, color  = variable)) + geom_point() + facet_wrap(~variable)
 
 dicty_Phen$variable = factor(dicty_Phen$variable)
 dicty_Phen$strain = factor(dicty_Phen$strain)
