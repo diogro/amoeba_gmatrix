@@ -43,7 +43,7 @@ plot21 = ggplot(cast_phen, aes(tsc   , succes, group = 1)) + geom_point() + geom
 plot22 = ggplot(cast_phen, aes(tsc   , viab  , group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 plot23 = ggplot(cast_phen, aes(viab  , succes, group = 1)) + geom_point() + geom_smooth(method="lm") + theme_classic(base_size = 20)
 #png("./figures/real.png", heigh = 720, width = 1080)
-grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
+#grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
 #dev.off()
 
 ##
