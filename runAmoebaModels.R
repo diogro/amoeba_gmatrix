@@ -106,17 +106,17 @@ plot13 = ggplot(sim_strains, aes(size, viab  , group = 1)) + geom_point(alpha = 
 plot21 = ggplot(sim_strains, aes(tsc , succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot22 = ggplot(sim_strains, aes(tsc , viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 plot23 = ggplot(sim_strains, aes(viab, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-plot11 = plot11 + geom_point(data = cast_phen, aes(size, succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Success') +
+plot11 = plot11 + geom_point(data = cast_phen, aes(size, succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Social success') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 plot12 = plot12 + geom_point(data = cast_phen, aes(size, tsc   , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Spore number') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 plot13 = plot13 + geom_point(data = cast_phen, aes(size, viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore size', y = 'Viability') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
-plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Success') +
+plot21 = plot21 + geom_point(data = cast_phen, aes(tsc   , succes, group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Social success') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 plot22 = plot22 + geom_point(data = cast_phen, aes(tsc   , viab  , group = 1), color = 'red', size = 3) + labs(x = 'Spore number', y = 'Viability') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
-plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red', size = 3) + labs(x = 'Viability', y = 'Success') +
+plot23 = plot23 + geom_point(data = cast_phen, aes(viab  , succes, group = 1), color = 'red', size = 3) + labs(x = 'Viability', y = 'Social success') +
  scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 png("./figures/simulated.png", heigh = 720, width = 1080)
 grid.arrange(plot11, plot12, plot13, plot21, plot22, plot23, ncol = 3)
@@ -160,12 +160,12 @@ cast_phen_orig = mutate(cast_phen_orig, clonal_fitness = tsc_scaled*viab)
 
 suc_tsc_plot = ggplot(sim_strains, aes(tsc, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 via_tsc_plot = ggplot(sim_strains, aes(tsc, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Success') +
+suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, size = 3, color = 'red') + labs(x = 'Spore number', y = 'Social success') +
  scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
 via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Viability') +
  scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
 fit_tsc_plot = ggplot(sim_phens , aes(tsc , fitness , group = 1)) + geom_point(alpha = 0.3)  + theme_classic(base_size = 20)
-fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Social fitness') +
+fit_tsc_plot = fit_tsc_plot + labs(x = 'Spore number', y = 'Realized social fitness') +
 geom_point(data = cast_phen_orig, aes(tsc   , fitness  , group = 1), color = 'red', size = 3) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_continuous(limits = c(-1, 1))
 png("./figures/fitness_tsc.png", heigh = 500, width = 1080)
@@ -177,13 +177,13 @@ dev.off()
 
 suc_size_plot = ggplot(sim_strains, aes(size, succes, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 via_size_plot = ggplot(sim_strains, aes(size, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-suc_size_plot = suc_size_plot + geom_point(data = cast_phen, aes(size, succes, group = 1), size=3, color = 'red')  + labs(x = 'Spore size', y = 'Success') +
+suc_size_plot = suc_size_plot + geom_point(data = cast_phen, aes(size, succes, group = 1), size=3, color = 'red')  + labs(x = 'Spore size', y = 'Social success') +
 scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 via_size_plot = via_size_plot + geom_point(data = cast_phen, aes(size, viab  , group = 1), size=3, color = 'red') + labs(x = 'Spore size', y = 'Viability') +
 scale_x_continuous(limits = c(-2.2, 2.2)) + scale_y_continuous(limits = c(-2.2, 2.2))
 scale_x_continuous(limits = c(-2, 2))
 fit_size_plot = ggplot(sim_phens , aes(size , fitness , group = 1)) + geom_point(alpha = 0.3) + theme_classic(base_size = 20)
-fit_size_plot = fit_size_plot + labs(x = 'Spore size', y = 'Social fitness') +
+fit_size_plot = fit_size_plot + labs(x = 'Spore size', y = 'Realized social fitness') +
 geom_point(data = cast_phen_orig, aes(scale(size)   , fitness  , group = 1), color = 'red', size = 3) +
 geom_smooth(color = 'black', method='lm', formula = y ~ poly(x, 2)) + scale_x_continuous(limits = c(-2.2, 2.2))
 png("./figures/fitness_spore_size.png", heigh = 500, width = 1080)
@@ -195,7 +195,7 @@ dev.off()
 
 suc_tsc_plot = ggplot(sim_strains, aes(tsc, size, group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
 via_tsc_plot = ggplot(sim_strains, aes(tsc, viab  , group = 1)) + geom_point(alpha = 0.3) + geom_smooth(method="lm", color = 'black') + theme_classic(base_size = 20)
-suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Success') +
+suc_tsc_plot = suc_tsc_plot + geom_point(data = cast_phen, aes(tsc, succes, group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Social success') +
 scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
 via_tsc_plot = via_tsc_plot + geom_point(data = cast_phen, aes(tsc, viab  , group = 1), size = 3, color = 'red') + labs(x = 'Spore number', y = 'Viability') +
 scale_x_continuous(limits = c(-1.5, 1.5)) + scale_y_continuous(limits = c(-2.2, 2.2))
