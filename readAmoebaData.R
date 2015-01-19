@@ -18,10 +18,7 @@ names(dicty_Phen)[[3]] = 'variable'
 dicty_Phen$variable = gsub('succ', 'succes', dicty_Phen$variable)
 dicty_Phen$variable = gsub('TSC', 'tsc', dicty_Phen$variable)
 
-mean_sucess <- dicty_Phen %>% group_by(strain, variable) %>% summarize(median(value)) %>% filter(variable == 'succes')
-strain_levels <- mean_sucess[order(mean_sucess[,3]),]$strain
-strain_levels <- c(strain_levels, unique(dicty_Phen$strain)[!unique(dicty_Phen$strain) %in% strain_levels])
-dicty_Phen$strain <- factor(dicty_Phen$strain, levels = strain_levels)
+dicty_Phen$value[dicty_Phen$variable == 'tsc'] = dicty_Phen$value[dicty_Phen$variable == 'tsc'] + 6.9
 
 #dicty_Phen = filter(dicty_Phen, (value > 0 & variable == 'viab') | variable != 'viab')
 #dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
