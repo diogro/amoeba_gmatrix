@@ -10,12 +10,18 @@ library(gtools)
 dicty_Phen = read.csv("./data/dicty\ phenotypes_new.csv", as.is = T)
 #dicty_Phen_std = read.csv("./dicty_phenotypes_standardized.csv")
 #dicty_Phen_std$strain = paste("X", dicty_Phen_std$strain, sep = '')
-dicty_Phen$strain = paste("X", dicty_Phen$strain, sep = '')
+#dicty_Phen$strain = paste("X", dicty_Phen$strain, sep = '')
+dicty_Phen$strain = as.character(dicty_Phen$strain)
 #names(dicty_Phen_std)[[4]] = 'variable'
 names(dicty_Phen)[[3]] = 'variable'
 
 dicty_Phen$variable = gsub('succ', 'succes', dicty_Phen$variable)
 dicty_Phen$variable = gsub('TSC', 'tsc', dicty_Phen$variable)
+
+mean_sucess <- dicty_Phen %>% group_by(strain, variable) %>% summarize(median(value)) %>% filter(variable == 'succes')
+strain_levels <- mean_sucess[order(mean_sucess[,3]),]$strain
+strain_levels <- c(strain_levels, unique(dicty_Phen$strain)[!unique(dicty_Phen$strain) %in% strain_levels])
+dicty_Phen$strain <- factor(dicty_Phen$strain, levels = strain_levels)
 
 #dicty_Phen = filter(dicty_Phen, (value > 0 & variable == 'viab') | variable != 'viab')
 #dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
@@ -27,8 +33,22 @@ dicty_Phen$variable = gsub('TSC', 'tsc', dicty_Phen$variable)
 #qqline(dicty_Phen$value[dicty_Phen$variable == 'tsc'])
 #qqnorm(dicty_Phen$value[dicty_Phen$variable == 'size'], main = 'Spore size')
 #qqline(dicty_Phen$value[dicty_Phen$variable == 'size'])
-#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'succes'], main = 'Success')
+#qqnorm(dicty_Phen$value[dicty_Phen$variable == 'succes'], main = 'Proportion in chimera')
 #qqline(dicty_Phen$value[dicty_Phen$variable == 'succes'])
+
+variable_names <- list('viab' = 'Viability',
+                       'tsc'= 'Spore number',
+                       'size' = 'Spore size',
+                       'succes' = 'Proportion in chimera')
+
+dicty_Phen$plot_variable <- unlist(variable_names[dicty_Phen$variable])
+
+boxplots <- ggplot(dicty_Phen, aes(strain, value)) + geom_boxplot() + facet_wrap(~plot_variable, scale = 'free') + theme_bw() + labs(x = 'Strain', y = 'Scaled trait value')+ theme(panel.margin = unit(2, "lines")) 
+mask = dicty_Phen$variable == 'viab' & dicty_Phen$strain %in% c('80.1', '87.1')
+violinplots <- ggplot(dicty_Phen, aes(strain, value))  + geom_violin(data = dicty_Phen[!mask,]) + geom_point() + facet_wrap(~plot_variable, scale = 'free') + theme_bw() + labs(x = 'Strain', y = 'Scaled trait value')+ theme(panel.margin = unit(2, "lines")) 
+ggsave('./figures/dicty_boxplots.png', boxplots, height = 10, width = 20)
+ggsave('./figures/dicty_violinplots.png', violinplots, height = 10, width = 20)
+
 
 dicty_Phen_std = dicty_Phen
 dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'] = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'])
@@ -43,3 +63,6 @@ dicty_Phen$strain = factor(dicty_Phen$strain)
 
 dicty_Phen_std$variable = factor(dicty_Phen_std$variable)
 dicty_Phen_std$strain = factor(dicty_Phen_std$strain)
+
+succes_plot = ggplot(filter(dicty_Phen, variable == 'succes'), aes(value+51)) + geom_histogram() + theme_classic() + labs(x = 'Proportion in chimera')
+ggsave("~/Desktop/success.png", succes_plot)
