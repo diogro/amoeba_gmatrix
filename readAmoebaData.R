@@ -19,6 +19,7 @@ dicty_Phen$variable = gsub('succ', 'succes', dicty_Phen$variable)
 dicty_Phen$variable = gsub('TSC', 'tsc', dicty_Phen$variable)
 
 dicty_Phen$value[dicty_Phen$variable == 'tsc'] = dicty_Phen$value[dicty_Phen$variable == 'tsc'] + 6.9
+dicty_Phen$value[dicty_Phen$variable == 'size'] = dicty_Phen$value[dicty_Phen$variable == 'size'] + log10(1000/40.535)
 
 #dicty_Phen = filter(dicty_Phen, (value > 0 & variable == 'viab') | variable != 'viab')
 #dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
