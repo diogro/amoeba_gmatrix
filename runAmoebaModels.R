@@ -1,6 +1,6 @@
 if(!require(ape)) { install.packages("ape"); library(ape) }
 if(!require(cluster)) { install.packages("cluster"); library(cluster) }
-if(!require(Morphometrics)) {
+if(!require(evolqg)) {
     if(!require(devtools))
         instal.packages("devtools")
     devtools::install_github("lem-usp/evolqg"); library(evolqg) }
