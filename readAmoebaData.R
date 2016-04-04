@@ -18,8 +18,8 @@ names(dicty_Phen)[[3]] = 'variable'
 dicty_Phen$variable = gsub('succ', 'succes', dicty_Phen$variable)
 dicty_Phen$variable = gsub('TSC', 'tsc', dicty_Phen$variable)
 
-dicty_Phen$value[dicty_Phen$variable == 'tsc'] = dicty_Phen$value[dicty_Phen$variable == 'tsc'] + 6.9
-dicty_Phen$value[dicty_Phen$variable == 'size'] = dicty_Phen$value[dicty_Phen$variable == 'size'] + log10(1000/40.535)
+#dicty_Phen$value[dicty_Phen$variable == 'tsc'] = dicty_Phen$value[dicty_Phen$variable == 'tsc'] + 6.9
+#dicty_Phen$value[dicty_Phen$variable == 'size'] = dicty_Phen$value[dicty_Phen$variable == 'size'] + log10(1000/40.535)
 
 #dicty_Phen = filter(dicty_Phen, (value > 0 & variable == 'viab') | variable != 'viab')
 #dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
@@ -41,11 +41,11 @@ variable_names <- list('viab' = 'Viability',
 
 dicty_Phen$plot_variable <- unlist(variable_names[dicty_Phen$variable])
 
-boxplots <- ggplot(dicty_Phen, aes(strain, value)) + geom_boxplot() + facet_wrap(~plot_variable, scale = 'free') + theme_bw() + labs(x = 'Strain', y = 'Scaled trait value')+ theme(panel.margin = unit(2, "lines")) 
+boxplots <- ggplot(dicty_Phen, aes(strain, value)) + geom_boxplot() + facet_wrap(~plot_variable, scale = 'free') + theme_bw() + labs(x = 'Strain ID (See Supplementary Table)', y = 'Trait value (see legend)')+ theme(panel.margin = unit(2, "lines")) 
 mask = dicty_Phen$variable == 'viab' & dicty_Phen$strain %in% c('80.1', '87.1')
 violinplots <- ggplot(dicty_Phen, aes(strain, value))  + geom_violin(data = dicty_Phen[!mask,]) + geom_point() + facet_wrap(~plot_variable, scale = 'free') + theme_bw() + labs(x = 'Strain', y = 'Scaled trait value')+ theme(panel.margin = unit(2, "lines")) 
-ggsave('./figures/dicty_boxplots.png', boxplots, height = 10, width = 20)
-ggsave('./figures/dicty_violinplots.png', violinplots, height = 10, width = 20)
+ggsave('./figures/dicty_boxplots.tiff', boxplots, height = 10, width = 20, dpi = 500)
+ggsave('./figures/dicty_violinplots.tiff', violinplots, height = 10, width = 20, dpi = 500)
 
 
 dicty_Phen_std = dicty_Phen
