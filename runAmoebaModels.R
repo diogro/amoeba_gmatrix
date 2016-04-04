@@ -1,9 +1,9 @@
 if(!require(ape)) { install.packages("ape"); library(ape) }
 if(!require(cluster)) { install.packages("cluster"); library(cluster) }
-if(!require(Morphometrics)) {
+if(!require(evolqg)) {
     if(!require(devtools))
         instal.packages("devtools")
-    devtools::install_github("Morphometrics", "lem-usp"); library(Morphometrics) }
+    devtools::install_github("lem-usp/evolqg"); library(evolqg) }
 if(!require(corrgram)) { install.packages("corrgram"); library(corrgram) }
 
 source('./readAmoebaData.R')
@@ -18,7 +18,7 @@ find_CI = function(x, prob = 0.95){
     #print(lowest_int)
     for(i in 1:(n-nint)){
         current_int = abs(xs[i] - xs[i+nint])
-        if(current_int <= lowest_int)xis.title.y=element_text(vjust=0.1){
+        if(current_int <= lowest_int){
             lowest_int = current_int
             pos = i
         }

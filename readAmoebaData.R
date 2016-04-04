@@ -21,9 +21,6 @@ dicty_Phen$variable = gsub('TSC', 'tsc', dicty_Phen$variable)
 #dicty_Phen$value[dicty_Phen$variable == 'tsc'] = dicty_Phen$value[dicty_Phen$variable == 'tsc'] + 6.9
 #dicty_Phen$value[dicty_Phen$variable == 'size'] = dicty_Phen$value[dicty_Phen$variable == 'size'] + log10(1000/40.535)
 
-#dicty_Phen = filter(dicty_Phen, (value > 0 & variable == 'viab') | variable != 'viab')
-#dicty_Phen$value[dicty_Phen$variable == 'viab'] = logit(dicty_Phen$value[dicty_Phen$variable == 'viab'])
-
 #par(mfrow= c(2, 2))
 #qqnorm(dicty_Phen$value[dicty_Phen$variable == 'viab'], main = 'Viability')
 #qqline(dicty_Phen$value[dicty_Phen$variable == 'viab'])
@@ -47,7 +44,6 @@ violinplots <- ggplot(dicty_Phen, aes(strain, value))  + geom_violin(data = dict
 ggsave('./figures/dicty_boxplots.tiff', boxplots, height = 10, width = 20, dpi = 500)
 ggsave('./figures/dicty_violinplots.tiff', violinplots, height = 10, width = 20, dpi = 500)
 
-
 dicty_Phen_std = dicty_Phen
 dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'] = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'succes'])
 dicty_Phen_std$value[dicty_Phen_std$variable == 'size']   = scale(dicty_Phen_std$value[dicty_Phen_std$variable == 'size'])
@@ -63,4 +59,3 @@ dicty_Phen_std$variable = factor(dicty_Phen_std$variable)
 dicty_Phen_std$strain = factor(dicty_Phen_std$strain)
 
 succes_plot = ggplot(filter(dicty_Phen, variable == 'succes'), aes(value+51)) + geom_histogram() + theme_classic() + labs(x = 'Proportion in chimera')
-ggsave("~/Desktop/success.png", succes_plot)

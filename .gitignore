@@ -5,3 +5,4 @@ figures/*
 *.Rdata
 *.csv
 *.xls
+*.Rproj
