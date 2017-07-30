@@ -5,6 +5,7 @@ if(!require(evolqg)) {
         instal.packages("devtools")
     devtools::install_github("lem-usp/evolqg"); library(evolqg) }
 if(!require(corrgram)) { install.packages("corrgram"); library(corrgram) }
+if(!require(superheat)) { install.packages("superheat"); library(superheat) }
 
 source('./readAmoebaData.R')
 
@@ -55,7 +56,7 @@ G_lme4 = VarCorr(model)[[1]]
 rownames(G_lme4) = colnames(G_lme4) = gsub('variable', '', rownames(G_lme4))
 dimnames(attr(G_lme4, 'correlation')) = dimnames(G_lme4)
 names(attr(G_lme4, 'stddev')) = rownames(G_lme4)
-#corrgram(G_lme4)
+superheat(G_lme4, row.dendrogram = TRUE, col.dendrogram = TRUE)
 #MatrixCompare(G_lme4, G_mcmc)
 
 ##
